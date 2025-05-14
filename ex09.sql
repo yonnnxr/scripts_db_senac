@@ -1,1 +1,52 @@
-a
+CREATE TABLE DEPARTAMENTO (
+    ID_Departamento INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(100) NOT NULL UNIQUE,
+    ID_Chefe INT
+);
+
+CREATE TABLE TIPO_EQUIPAMENTO (
+    ID_TipoEquipamento INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(100) NOT NULL UNIQUE,
+    Descricao TEXT
+);
+
+CREATE TABLE EMPREGADO (
+    ID_Empregado INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(255) NOT NULL,
+    Cargo VARCHAR(100)
+);
+
+ALTER TABLE DEPARTAMENTO ADD CONSTRAINT FK_ChefeDepartamento FOREIGN KEY (ID_Chefe) REFERENCES EMPREGADO(ID_Empregado);
+
+CREATE TABLE EQUIPAMENTO (
+    ID_Equipamento INT PRIMARY KEY AUTO_INCREMENT,
+    NumeroSerie VARCHAR(100) UNIQUE,
+    DataAquisicao DATE,
+    ID_TipoEquipamento INT NOT NULL,
+    ID_Departamento INT NOT NULL,
+    FOREIGN KEY (ID_TipoEquipamento) REFERENCES TIPO_EQUIPAMENTO(ID_TipoEquipamento),
+    FOREIGN KEY (ID_Departamento) REFERENCES DEPARTAMENTO(ID_Departamento)
+);
+
+CREATE TABLE MANUTENCAO (
+    ID_Manutencao INT PRIMARY KEY AUTO_INCREMENT,
+    DataInicio DATE NOT NULL,
+    DataFim DATE,
+    Descricao TEXT,
+    Responsavel VARCHAR(255),
+    Custo DECIMAL(10, 2),
+    ID_Equipamento INT NOT NULL,
+    FOREIGN KEY (ID_Equipamento) REFERENCES EQUIPAMENTO(ID_Equipamento)
+);
+
+CREATE TABLE SOLICITACAO_COMPRA (
+    ID_Solicitacao INT PRIMARY KEY AUTO_INCREMENT,
+    DataSolicitacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ID_DepartamentoSolicitante INT NOT NULL,
+    ID_TipoEquipamento INT NOT NULL,
+    Quantidade INT NOT NULL DEFAULT 1,
+    Justificativa TEXT,
+    Status ENUM('Pendente', 'Aprovada', 'Rejeitada', 'Comprada') NOT NULL DEFAULT 'Pendente',
+    FOREIGN KEY (ID_DepartamentoSolicitante) REFERENCES DEPARTAMENTO(ID_Departamento),
+    FOREIGN KEY (ID_TipoEquipamento) REFERENCES TIPO_EQUIPAMENTO(ID_TipoEquipamento)
+);

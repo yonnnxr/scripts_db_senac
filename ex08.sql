@@ -1,1 +1,75 @@
-a
+CREATE TABLE SETOR (
+    ID_Setor INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE FORNECEDOR (
+    ID_Fornecedor INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(255) NOT NULL,
+    CNPJ VARCHAR(18) UNIQUE,
+    RamoAtividade VARCHAR(255),
+    Endereco VARCHAR(255),
+    Telefone VARCHAR(20)
+);
+
+CREATE TABLE TIPO_CONTRATO (
+    ID_TipoContrato INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(100) NOT NULL UNIQUE,
+    Descricao TEXT
+);
+
+CREATE TABLE FORMA_PAGAMENTO (
+    ID_FormaPagamento INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE CONTRATO (
+    ID_Contrato INT PRIMARY KEY AUTO_INCREMENT,
+    Numero VARCHAR(50) NOT NULL UNIQUE,
+    DataInicio DATE NOT NULL,
+    DataFim DATE,
+    ValorTotal DECIMAL(15, 2),
+    ID_TipoContrato INT NOT NULL,
+    ID_FormaPagamento INT NOT NULL,
+    ID_SetorResponsavel INT NOT NULL,
+    FOREIGN KEY (ID_TipoContrato) REFERENCES TIPO_CONTRATO(ID_TipoContrato),
+    FOREIGN KEY (ID_FormaPagamento) REFERENCES FORMA_PAGAMENTO(ID_FormaPagamento),
+    FOREIGN KEY (ID_SetorResponsavel) REFERENCES SETOR(ID_Setor)
+);
+
+CREATE TABLE MATERIAL_SERVICO (
+    ID_MaterialServico INT PRIMARY KEY AUTO_INCREMENT,
+    Nome VARCHAR(255) NOT NULL UNIQUE,
+    Descricao TEXT
+);
+
+CREATE TABLE BOLETA (
+    ID_Boleta INT PRIMARY KEY AUTO_INCREMENT,
+    Numero VARCHAR(50) NOT NULL UNIQUE,
+    DataVencimento DATE NOT NULL,
+    DataPagamento DATE,
+    Status ENUM('Pendente', 'Paga') NOT NULL DEFAULT 'Pendente',
+    Valor DECIMAL(15, 2) NOT NULL,
+    ID_Fornecedor INT NOT NULL,
+    ID_Contrato INT,
+    FOREIGN KEY (ID_Fornecedor) REFERENCES FORNECEDOR(ID_Fornecedor),
+    FOREIGN KEY (ID_Contrato) REFERENCES CONTRATO(ID_Contrato)
+);
+
+CREATE TABLE CONTRATO_FORNECEDOR (
+    ID_Contrato INT NOT NULL,
+    ID_Fornecedor INT NOT NULL,
+    PRIMARY KEY (ID_Contrato, ID_Fornecedor),
+    FOREIGN KEY (ID_Contrato) REFERENCES CONTRATO(ID_Contrato),
+    FOREIGN KEY (ID_Fornecedor) REFERENCES FORNECEDOR(ID_Fornecedor)
+);
+
+CREATE TABLE CONTRATO_MATERIAL_SERVICO (
+    ID_Contrato INT NOT NULL,
+    ID_MaterialServico INT NOT NULL,
+    Quantidade DECIMAL(10, 2),
+    ValorUnitario DECIMAL(15, 2),
+    PRIMARY KEY (ID_Contrato, ID_MaterialServico),
+    FOREIGN KEY (ID_Contrato) REFERENCES CONTRATO(ID_Contrato),
+    FOREIGN KEY (ID_MaterialServico) REFERENCES MATERIAL_SERVICO(ID_MaterialServico)
+);
